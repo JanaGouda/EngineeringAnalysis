@@ -1,0 +1,167 @@
+clc; 
+clear;
+
+A = input('Enter your coefficient matrix');
+B = input('Enter source vector');
+
+N = length(B);
+X = zeros(N,1);
+
+Aug = [A B];
+
+for j = 1 : N - 1
+
+    %Partial Pivoting
+    [M,P] = max(abs(Aug(j:N,j)));
+
+    C = Aug(j,:);
+    Aug(j,:) = Aug(P+j-1,:);
+    Aug(P+j-1,:) = C;
+    %echlon form 
+
+    for i = j + 1 : N
+        m = Aug(i,j)/Aug(j,j);
+        Aug(i,:) = Aug(i,:) - m*Aug(j,:);
+    end  
+end
+X(N) = Aug(N,N+1)/Aug(N,N);
+
+for k=N-1:
+
+
+
+
+
+
+
+
+
+
+%{
+clc;
+clear;
+
+function x = gaussPivot(A,b) % Define function that solves Ax=b
+
+n = length(b); % Get number of equations from vector b
+
+Aug = [A b]; % Create augmented matrix by attaching b to A
+
+% ================= FORWARD ELIMINATION =================
+
+for k = 1:n-1 % Loop over pivot columns
+
+    maxRow = k; % Assume current row contains largest pivot
+
+    maxValue = abs(Aug(k,k)); % Store absolute value of current pivot
+
+    for i = k+1:n % Search rows below current row
+
+        if abs(Aug(i,k)) > maxValue % Check if larger pivot exists
+
+            maxValue = abs(Aug(i,k)); % Update largest pivot value
+
+            maxRow = i; % Store row index of largest pivot
+
+        end
+
+    end
+
+    if maxRow ~= k % Check if row swapping is needed
+
+        temp = Aug(k,:); % Temporarily store current row
+
+        Aug(k,:) = Aug(maxRow,:); % Replace current row
+
+        Aug(maxRow,:) = temp; % Put stored row in swapped location
+
+    end
+
+    for i = k+1:n % Loop through rows below pivot
+
+        factor = Aug(i,k) / Aug(k,k); % Compute elimination factor
+
+        for j = k:n+1 % Loop through row entries
+
+            Aug(i,j) = Aug(i,j) - factor * Aug(k,j); % Eliminate value below pivot
+
+        end
+
+    end
+
+end
+
+% ================= BACK SUBSTITUTION =================
+
+x = zeros(n,1); % Create solution vector initialized with zeros
+
+x(n) = Aug(n,n+1) / Aug(n,n); % Solve last variable directly
+
+for i = n-1:-1:1 % Move upward through equations
+
+    sumTerm = 0; % Initialize summation term
+
+    for j = i+1:n % Loop through known variables
+
+        sumTerm = sumTerm + Aug(i,j) * x(j); % Compute summation
+
+    end
+
+    x(i) = (Aug(i,n+1) - sumTerm) / Aug(i,i); % Solve current variable
+
+end
+
+end % End function
+%}
+
+
+
+
+%{
+function x = gaussPivot(A,b)
+
+[n,~] = size(A);
+
+Aug = [A b];
+
+for k = 1:n-1
+
+    maxRow = k;
+
+    for i = k+1:n
+        if abs(Aug(i,k)) > abs(Aug(maxRow,k))
+            maxRow = i;
+        end
+    end
+
+    temp = Aug(k,:);
+    Aug(k,:) = Aug(maxRow,:);
+    Aug(maxRow,:) = temp;
+
+    for i = k+1:n
+
+        factor = Aug(i,k)/Aug(k,k);
+
+        for j = k:n+1
+            Aug(i,j) = Aug(i,j) - factor*Aug(k,j);
+        end
+    end
+end
+
+x = zeros(n,1);
+
+x(n) = Aug(n,n+1)/Aug(n,n);
+
+for i = n-1:-1:1
+
+    sumValue = 0;
+
+    for j = i+1:n
+        sumValue = sumValue + Aug(i,j)*x(j);
+    end
+
+    x(i) = (Aug(i,n+1)-sumValue)/Aug(i,i);
+end
+
+end
+%}
